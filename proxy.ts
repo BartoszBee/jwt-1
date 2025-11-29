@@ -4,7 +4,7 @@ export const config = {
   matcher: ["/profile/:path*"],
 };
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const accessToken = req.cookies.get("access_token")?.value;
 
   if (!accessToken) {
