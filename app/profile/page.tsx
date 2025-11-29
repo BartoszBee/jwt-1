@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface User {
   id: string;
@@ -52,11 +53,11 @@ export default function ProfilePage() {
         <h1 className="text-2xl font-semibold mb-4">Your Profile</h1>
 
         <p className="mb-2">
-          <strong>Email:</strong> {user?.email ?? 'nieznany'}
+          <strong>Email:</strong> {user?.email ?? "nieznany"}
         </p>
 
         <p className="mb-2">
-          <strong>Role:</strong> {user?.role ?? 'nieznany'}
+          <strong>Role:</strong> {user?.role ?? "nieznany"}
         </p>
 
         <button
@@ -65,7 +66,14 @@ export default function ProfilePage() {
         >
           Logout
         </button>
+        <Link
+        href="/"
+        className="block mt-4 text-blue-600 hover:underline text-sm"
+      >
+        ← Back to Home
+      </Link>
       </div>
+      
     </div>
   );
 }
