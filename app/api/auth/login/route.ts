@@ -3,12 +3,36 @@ import { NextResponse } from "next/server";
 import { createAccessToken, createRefreshToken } from "@/lib/jwt";
 import { users } from "@/lib/users";
 import { cookies } from "next/headers";
-import type { JWTPayload} from "jose";
+import type { JWTPayload } from "jose";
 
 
 export async function POST(req: Request) {
-    const body = await req.json();
-    const { email, password } = body;
+    let body;
+
+    try {
+        body = await req.json();
+    } catch {
+        return NextResponse.json(
+            { error: "Invalid JSON" },
+            { status: 400 }
+        );
+    }
+
+    if (!body || typeof body !== "object") {
+        return NextResponse.json(
+            { error: "Request body must be JSON" },
+            { status: 400 }
+        );
+    }
+
+    const { email, password } = body || {};
+
+    if (!email || !password) {
+        return NextResponse.json(
+            { error: "Email and password are required" },
+            { status: 400 }
+        );
+    }
 
     // Szukamy użytkownika (na razie prosta, wbudowana lista)
     const user = users.find(
@@ -23,7 +47,7 @@ export async function POST(req: Request) {
     }
 
     // 2) Payload do tokena (nie dajemy nic tajnego)
-    const payload:JWTPayload = {
+    const payload: JWTPayload = {
         sub: user.id,
         email: user.email,
         role: user.role,
@@ -33,7 +57,7 @@ export async function POST(req: Request) {
     const accessToken = await createAccessToken(payload);
     const refreshToken = await createRefreshToken(payload);
 
-    // 4) Umieszczamy bilety w bezpiecznych cookie
+    // 4) Umieszczamy tokeny w bezpiecznych cookie
     const cookieStore = await cookies();
     cookieStore.set("access_token", accessToken, {
         httpOnly: true,
